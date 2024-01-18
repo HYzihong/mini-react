@@ -8,10 +8,16 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
+    "lint-staged": "^15.2.0",
+    "simple-git-hooks": "^2.9.0",
     "vite": "^5.0.8",
     "vitest": "^1.2.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
   }
 }
