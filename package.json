@@ -19,12 +19,14 @@
     "prettier": "^3.2.4",
     "simple-git-hooks": "^2.9.0",
     "vite": "^5.0.8",
+    "vite-plugin-eslint": "^1.8.1",
     "vitest": "^1.2.1"
   },
   "lint-staged": {
-    "*.js": "eslint  --fix"
+    "*.{js,jsx,cjs}": "eslint --fix"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "pnpm lint-staged",
+    "pre-push": "pnpm run format"
   }
 }
