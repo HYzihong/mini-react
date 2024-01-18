@@ -3,7 +3,7 @@
  * @Date: 2024-01-18 00:05:35
  * @LastEditors: hy
  * @Description:
- * @LastEditTime: 2024-01-18 17:08:10
+ * @LastEditTime: 2024-01-18 17:16:35
  * @FilePath: /mini-react/src/hreact/core/React.js
  * @Copyright 2024 hy, All Rights Reserved.
  **/
@@ -44,24 +44,23 @@ function updateProps(el, props) {
   });
 }
 
-function initChildren(work) {
-  let prevChild = null;
-  console.log("initChildren", work.props?.children);
-  work.props?.children?.forEach((child, index) => {
-    const newWork = {
+function initChildren(fiber) {
+  let prevFiber = null; // 上一个节点
+  fiber.props?.children?.forEach((child, index) => {
+    const newFiber = {
       type: child.type,
       props: child.props,
       dom: null,
       child: null,
       sibling: null,
-      parent: work,
+      parent: fiber,
     };
     if (index === 0) {
-      work.child = newWork;
+      fiber.child = newFiber; // 兄弟节点
     } else {
-      prevChild.sibling = child;
+      prevFiber.sibling = child;
     }
-    prevChild = newWork;
+    prevFiber = newFiber;
   });
 }
 
@@ -73,6 +72,7 @@ let nextWorkOfUnit = null;
  */
 function workLoop(deadline) {
   let shouldYield = false;
+  // 当前任务还没有结束，有下一个节点要渲染
   while (!shouldYield && nextWorkOfUnit) {
     // 在执行完当前任务后返回新的任务
     nextWorkOfUnit = performWorkOfUnit(nextWorkOfUnit);
@@ -81,60 +81,32 @@ function workLoop(deadline) {
   requestIdleCallback(workLoop);
 }
 
-function performWorkOfUnit(work) {
-  if (!work.dom) {
+function performWorkOfUnit(fiber) {
+  if (!fiber.dom) {
     // 1. 创建我们的dom,给当前 work 赋值
-    const dom = (work.dom =
-      work.type === "TEXT_ELEMENT"
-        ? document.createTextNode("")
-        : document.createElement(work.type));
-    // const dom = (work.dom = createDom(work.type));
+    const dom = (fiber.dom = createDom(fiber.type));
 
     // 2. 处理props
-    Object.keys(work.props).forEach((key) => {
-      if (key != "children") {
-        dom[key] = work.props[key];
-      }
-    });
-    // updateProps(dom, work.props);
+    updateProps(dom, fiber.props);
 
-    work.parent.dom.append(dom);
+    // append dom
+    fiber.parent.dom.append(dom);
   }
 
-  console.log("performWorkOfUnit work ==>", work);
-
   // 3. 转换链表，设置好指针
-  const children = work.props?.children;
-  let prevChild = null; // 上一个节点
-  children?.forEach((child, index) => {
-    const newWork = {
-      type: child.type,
-      props: child.props,
-      child: null,
-      parent: work,
-      sibling: null,
-      dom: null,
-    };
-    if (index === 0) {
-      work.child = newWork;
-    } else {
-      prevChild.sibling = newWork; // 兄弟节点
-    }
-    prevChild = newWork;
-  });
-  // initChildren(work);
+  initChildren(fiber);
 
   // 4. 返回下一个要执行的任务
   // 检查是否有子节点
-  if (work.child) {
-    return work.child;
+  if (fiber.child) {
+    return fiber.child;
   }
   // 检查是否有兄弟节点
-  if (work.sibling) {
-    return work.sibling;
+  if (fiber.sibling) {
+    return fiber.sibling;
   }
   // 返回父节点的子节点，当返回undefined 则结束
-  return work.parent?.sibling;
+  return fiber.parent?.sibling;
 }
 
 requestIdleCallback(workLoop);
@@ -142,26 +114,6 @@ requestIdleCallback(workLoop);
 function render(el, container) {
   console.log("render el =>", el);
   console.log("render container =>", container);
-  // 1. 判断类型来创建dom
-  // const dom =
-  //   el.type != "TEXT_ELEMENT"
-  //     ? document.createElement(el.type)
-  //     : document.createTextNode("");
-
-  // //  2. 添加props
-  // Object.keys(el.props).forEach((key) => {
-  //   if (key != "children") {
-  //     dom[key] = el.props[key];
-  //   }
-  // });
-  // // 处理children
-  // const childrens = el.props.children;
-  // childrens.forEach((child) => {
-  //   render(child, dom);
-  // });
-
-  // // 3. 插入父节点中
-  // container.append(dom);
 
   // 根节点
   nextWorkOfUnit = {
