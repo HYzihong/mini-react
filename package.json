@@ -9,9 +9,12 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "lint": "eslint --ext .js,.jsx src --fix",
     "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.6.3",
+    "chalk": "^5.3.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -27,6 +30,6 @@
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm run format"
+    "commit-msg": "node scripts/verifyCommit.js"
   }
 }

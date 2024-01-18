@@ -3,7 +3,7 @@
  * @Date: 2024-01-18 18:49:33
  * @LastEditors: hy
  * @Description:
- * @LastEditTime: 2024-01-18 18:52:54
+ * @LastEditTime: 2024-01-18 19:04:16
  * @FilePath: /mini-react/.eslintrc.cjs
  * Copyright 2024 hy, All Rights Reserved.
  */
@@ -12,7 +12,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["eslint:recommended", "plugin:react/recommended", "prettier"],
+  extends: ["@antfu", "prettier"],
   overrides: [
     {
       env: {
