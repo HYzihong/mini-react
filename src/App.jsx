@@ -9,11 +9,11 @@
  **/
 import React from "./hreact/core/React.js";
 
-const App = React.createElement(
-  "app",
-  { id: "app", style: "color:pink;" },
-  "hi ",
-  "mini-react"
-);
-
+// const App = React.createElement(
+//   "app",
+//   { id: "app", style: "color:pink;" },
+//   "hi ",
+//   "mini-react"
+// );
+const App  = <div>h1 mini-react</div>
 export default App;
