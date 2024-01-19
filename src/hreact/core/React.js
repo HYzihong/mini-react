@@ -3,7 +3,7 @@
  * @Date: 2024-01-18 00:05:35
  * @LastEditors: hy
  * @Description:
- * @LastEditTime: 2024-01-19 22:40:17
+ * @LastEditTime: 2024-01-19 23:14:05
  * @FilePath: /mini-react/src/hreact/core/React.js
  * @Copyright 2024 hy, All Rights Reserved.
  **/
@@ -55,10 +55,11 @@ function initChildren(fiber) {
       sibling: null,
       parent: fiber,
     };
+
     if (index === 0) {
       fiber.child = newFiber; // 兄弟节点
     } else {
-      prevFiber.sibling = child;
+      prevFiber.sibling = newFiber;
     }
     prevFiber = newFiber;
   });
