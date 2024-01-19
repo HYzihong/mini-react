@@ -3,7 +3,7 @@
  * @Date: 2024-01-18 00:05:35
  * @LastEditors: hy
  * @Description:
- * @LastEditTime: 2024-01-18 17:16:35
+ * @LastEditTime: 2024-01-19 22:40:17
  * @FilePath: /mini-react/src/hreact/core/React.js
  * @Copyright 2024 hy, All Rights Reserved.
  **/
@@ -78,7 +78,27 @@ function workLoop(deadline) {
     nextWorkOfUnit = performWorkOfUnit(nextWorkOfUnit);
     shouldYield = deadline.timeRemaining() < 1;
   }
+
+  // 节点生成结束，需要渲染到页面
+  if (!nextWorkOfUnit && root) {
+    // 统一把子节点添加到根节点
+    commitRoot();
+  }
   requestIdleCallback(workLoop);
+}
+
+function commitRoot() {
+  commitWork(root.child);
+  root = null;
+}
+
+// 递归插入节点
+function commitWork(fiber) {
+  console.log("递归插入节点",fiber);
+  if (!fiber) return;
+  fiber.parent.dom.append(fiber.dom);
+  if(fiber.child)commitWork(fiber.child);
+  if(fiber.sibling)commitWork(fiber.sibling);
 }
 
 function performWorkOfUnit(fiber) {
@@ -90,7 +110,7 @@ function performWorkOfUnit(fiber) {
     updateProps(dom, fiber.props);
 
     // append dom
-    fiber.parent.dom.append(dom);
+    // fiber.parent.dom.append(dom);
   }
 
   // 3. 转换链表，设置好指针
@@ -122,7 +142,12 @@ function render(el, container) {
       children: [el],
     },
   };
+
+  root = nextWorkOfUnit;
 }
+
+// 根节点
+let root = null;
 
 const React = {
   render,
